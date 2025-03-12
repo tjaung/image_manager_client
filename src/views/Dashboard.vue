@@ -23,7 +23,7 @@
 <script>
 import Breadcrumb from "@/components/Dashboard/Breadcrumb.vue";
 import FinderList from "@/components/Dashboard/FileElements/FinderList.vue";
-import Toolbar from "@/components/Dashboard/Toolbar.vue";
+import Toolbar from "@/components/Dashboard/Toolbar/Toolbar.vue";
 import axios from "axios";
 import { useAuthStore } from "../store/auth";
 
@@ -43,8 +43,11 @@ export default {
     };
   },
   methods: {
-    refreshData() {
-      this.fetchData(this.currentPath.join("/"));
+    async refreshData() {
+      this.isLoading = true; // Set loading state
+      this.fetchData(this.currentPath.join("/")).finally(() => {
+        this.isLoading = false; // Reset loading state
+      });
     },
     async fetchData(folderPath = "") {
       if (!this.user) return; // Ensure user is defined

@@ -1,16 +1,12 @@
 <template>
-  <!-- Clicking anywhere on this div calls onRowClick (to navigate) -->
   <div class="finder-item" @click="onRowClick">
     <span class="icon" aria-hidden="true">📁</span>
-    <span class="item-name">
-      {{ folder.name }}
-    </span>
-
-    <span class="item-info" v-if="folder.created_at">
-      Created at: {{ folder.created_at }}
-    </span>
-
-    <!-- Delete button on the right, stopping click propagation -->
+    <div class="item-details-container">
+      <span class="item-name">{{ folder.name }}</span>
+      <span class="item-info" v-if="folder.created_at">
+        Created at: {{ new Date(folder.created_at).toLocaleDateString() }}
+      </span>
+    </div>
     <button class="delete-button" @click.stop="onDeleteClick">Delete</button>
   </div>
 </template>
@@ -80,26 +76,41 @@ export default {
   padding: 8px;
   border-bottom: 1px solid #ddd;
   font-family: system-ui, sans-serif;
-  /* The entire row is clickable except for the Delete button */
   cursor: pointer;
+  justify-content: space-between; /* Ensures spacing between name/details and delete button */
 }
+
 .finder-item:hover {
   background-color: #f5f5f5;
 }
+
 .icon {
   margin-right: 8px;
 }
+
+.item-details-container {
+  display: flex;
+  flex-grow: 1;
+  align-items: center;
+  justify-content: space-between;
+}
+
 .item-name {
   font-weight: 500;
-  margin-right: 10px;
 }
+
 .item-info {
-  margin: 0 10px;
+  margin-left: 20px; /* Space between name and info */
   color: #666;
   font-size: 0.9em;
 }
+
 .delete-button {
-  margin-left: auto;
+  margin-left: 20px; /* Ensures some space from the details */
   cursor: pointer;
+  background: none;
+  border: none;
+  color: #c00;
+  font-weight: bold;
 }
 </style>

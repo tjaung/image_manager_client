@@ -1,7 +1,15 @@
 <template>
   <div class="toolbar">
     <button @click="addFolder">Add Folder</button>
-    <button @click="uploadImage">Upload Image</button>
+    <!-- Trigger file input on button click -->
+    <button @click="triggerFileInput">Upload Image</button>
+    <!-- Hidden file input for handling file uploads -->
+    <input
+      type="file"
+      ref="fileInput"
+      style="display: none"
+      @change="uploadImage"
+    />
   </div>
 </template>
 
@@ -12,20 +20,18 @@ export default {
   props: {
     apiBaseUrl: String,
     userId: String,
-    currentPath: String, // Expecting a string path from the parent component
+    currentPath: String, // The current path in the folder structure
   },
   emits: ["update"],
   methods: {
     addFolder() {
       const folderName = prompt("Enter the name of the new folder:");
-      if (!folderName) return; // User cancelled the prompt
+      if (!folderName) return;
 
       let url;
       if (this.currentPath === "") {
-        // We are at the root
         url = `${this.apiBaseUrl}${this.userId}/folders/create/`;
       } else {
-        // We are in a subfolder
         url = `${this.apiBaseUrl}${this.userId}/folders/${this.currentPath}/create/`;
       }
 
@@ -43,9 +49,35 @@ export default {
         });
     },
 
-    uploadImage() {
-      // Upload image functionality can be implemented here
-      console.log("Upload image clicked");
+    triggerFileInput() {
+      this.$refs.fileInput.click();
+    },
+
+    uploadImage(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const formData = new FormData();
+      formData.append("file", file);
+
+      const url = `${this.apiBaseUrl}${this.userId}/folders/${this.currentPath}/upload/`;
+
+      axios
+        .post(url, formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+          withCredentials: true,
+        })
+        .then((response) => {
+          alert("Image uploaded successfully!");
+          this.$emit("update"); // Maybe refresh the listing or clear the input
+          this.$refs.fileInput.value = ""; // Clear the file input
+        })
+        .catch((error) => {
+          console.error("Error uploading image:", error);
+          alert("Failed to upload image.");
+        });
     },
   },
 };

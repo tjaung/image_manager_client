@@ -1,12 +1,16 @@
 <template>
   <div class="finder-item" @click="onClick">
     <span class="icon" aria-hidden="true">📄</span>
-    <span class="item-name">{{ file.name }}</span>
+    <span class="item-name">Name: {{ filename }}</span>
+    <!-- Use rawFile here -->
   </div>
 </template>
 
 <script>
+import { computed, ref } from "vue";
 import axios from "axios";
+import { toRaw } from "vue";
+
 export default {
   name: "FileItem",
   props: {
@@ -25,20 +29,40 @@ export default {
     apiBaseUrl: {
       type: String,
       required: true,
+      default: "http://localhost:8080/",
     },
   },
   emits: ["file-clicked"],
-  methods: {
-    async onClick() {
-      const url = `${this.apiBaseUrl}${this.userId}/folders/${this.folderPath}/${this.file.name}/`;
+  setup(props, { emit }) {
+    const rawFile = computed(() => toRaw(props.file)).value;
+    const paths = rawFile.file.split("/");
+    console.log(paths);
+    const filename = ref(paths[paths.length - 1]);
+    console.log(filename.value);
+    // Update filename whenever rawFile changes
+    computed(() => {
+      const paths = rawFile.value.file.split("/");
+      filename.value = paths[paths.length - 1];
+    });
+
+    async function onClick() {
+      console.log(rawFile.value);
+      const url = `${props.apiBaseUrl}${props.userId}/folders/${props.folderPath}/${filename.value}/`;
+      console.log("Constructed URL:", url);
+
       try {
         const response = await axios.get(url, { withCredentials: true });
-        this.$emit("file-clicked", response.data);
+        emit("file-clicked", response.data);
       } catch (error) {
         console.error("Failed to fetch file details:", error);
         alert("Failed to load file details.");
       }
-    },
+    }
+
+    return {
+      rawFile,
+      onClick,
+    };
   },
 };
 </script>

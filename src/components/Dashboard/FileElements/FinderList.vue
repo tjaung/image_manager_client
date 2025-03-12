@@ -11,6 +11,8 @@
       <FileItem
         :file="file"
         :folderPath="currentFolderPath"
+        :userId="userId"
+        :apiBaseUrl="apiBaseUrl"
         @file-click="handleFileClick"
       />
     </div>
@@ -38,6 +40,16 @@ export default {
     currentFolderPath: {
       type: String,
       default: "",
+    },
+    userId: {
+      // Added userId prop
+      type: String,
+      required: true,
+    },
+    apiBaseUrl: {
+      // Added apiBaseUrl prop
+      type: String,
+      required: true,
     },
   },
   emits: ["navigate", "refresh"],

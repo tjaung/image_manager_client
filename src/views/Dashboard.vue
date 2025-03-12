@@ -12,7 +12,9 @@
     </div>
     <FinderList
       :folders="folders"
-      :files="files"
+      :files="this.files"
+      :userId="user.id"
+      :currentFolderPath="currentPath.join('/')"
       @navigate="navigateToFolder"
     />
   </div>
@@ -53,6 +55,7 @@ export default {
         const response = await axios.get(url, { withCredentials: true });
         this.folders = response.data.folders;
         this.files = response.data.files;
+        console.log(response.data);
         this.currentPath = folderPath.split("/").filter(Boolean); // Update the path for the breadcrumb
       } catch (error) {
         if (error.response && error.response.status === 404) {

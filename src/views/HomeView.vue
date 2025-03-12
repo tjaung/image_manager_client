@@ -1,18 +1,26 @@
 <template>
   <div class="home">
-    <img alt="Vue logo" src="../assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js + TypeScript App"/>
+    <section class="hero">
+      <h1>Welcome to Our Site</h1>
+      <p>This is a single-page landing site.</p>
+    </section>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
-import HelloWorld from '@/components/HelloWorld.vue'; // @ is an alias to /src
+import { defineComponent } from "vue";
 
 export default defineComponent({
-  name: 'HomeView',
-  components: {
-    HelloWorld,
-  },
+  name: "HomeView",
 });
 </script>
+
+<style scoped>
+.home {
+  padding-top: 80px; /* Adjust to avoid overlap with the navbar */
+}
+.hero {
+  text-align: center;
+  margin: 40px 20px;
+}
+</style>

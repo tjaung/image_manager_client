@@ -1,0 +1,114 @@
+/* Reset and base styles */
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Base font and scrolling behavior */
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+  line-height: 1.5;
+  font-family: "Inter", sans-serif; /* Use your preferred font */
+}
+
+/* Body styles */
+body {
+  background-color: #f0f2f5;
+  color: #333;
+  font-weight: 400;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Media elements */
+img,
+picture,
+video,
+canvas,
+svg {
+  display: block;
+  max-width: 100%;
+}
+
+/* Links */
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+/* Lists */
+ul,
+ol {
+  list-style: none;
+}
+
+/* Accessibility: focus outline */
+:focus {
+  outline: 2px solid var(--primary-color);
+  outline-offset: 2px;
+}
+
+/* Utility container class */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+/* Button base styles */
+.btn {
+  display: inline-block;
+  background-color: var(--primary-color);
+  color: #fff;
+  padding: 0.75rem 1.5rem;
+  border-radius: 4px;
+  font-size: 1rem;
+  text-align: center;
+  border: none;
+  transition: background-color 0.3s ease;
+  cursor: pointer;
+}
+
+.btn:hover,
+.btn:focus {
+  background-color: var(--primary-hover-color);
+}
+
+/* Form elements */
+input,
+button,
+textarea,
+select {
+  font: inherit;
+}
+
+/* Optional utility spacing classes */
+.mt-1 {
+  margin-top: 1rem;
+}
+.mb-1 {
+  margin-bottom: 1rem;
+}
+.pt-1 {
+  padding-top: 1rem;
+}
+.pb-1 {
+  padding-bottom: 1rem;
+}
+
+/* CSS Variables for easy theming */
+:root {
+  --primary-color: #005fcc;
+  --primary-hover-color: #004bb5;
+  --secondary-color: #f0f2f5;
+  --text-color: #333;
+}
+
+/* PrimeVue Toast overrides (if needed) */
+.p-toast {
+  font-family: "Inter", sans-serif;
+}

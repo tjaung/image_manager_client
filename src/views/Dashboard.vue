@@ -12,7 +12,7 @@
     </div>
     <FinderList
       :folders="folders"
-      :files="this.files"
+      :files="files"
       :userId="user.id"
       :currentFolderPath="currentPath.join('/')"
       @navigate="navigateToFolder"
@@ -22,10 +22,10 @@
 
 <script>
 import Breadcrumb from "@/components/Dashboard/Breadcrumb.vue";
-import FinderList from "@/components/Dashboard/FileElements/FinderList.vue";
-import Toolbar from "@/components/Dashboard/Toolbar/Toolbar.vue";
-import axios from "axios";
-import { useAuthStore } from "../store/auth";
+import FinderList from "@/components/Dashboard/FinderList.vue";
+import Toolbar from "@/components/Dashboard/Toolbar.vue";
+import { useAuthStore } from "@/store/auth";
+import { listFolders } from "@/api/folderServices";
 
 export default {
   components: {
@@ -37,41 +37,41 @@ export default {
     return {
       folders: [],
       files: [],
-      currentPath: [], // This will store the full path as an array of segments
+      currentPath: [], // Array of path segments
       apiBaseUrl: process.env.VUE_APP_API_BASE_URL,
       user: null,
+      isLoading: false,
     };
   },
   methods: {
     async refreshData() {
-      this.isLoading = true; // Set loading state
-      this.fetchData(this.currentPath.join("/")).finally(() => {
-        this.isLoading = false; // Reset loading state
-      });
+      this.isLoading = true;
+      await this.fetchData(this.currentPath.join("/"));
+      this.isLoading = false;
     },
     async fetchData(folderPath = "") {
-      if (!this.user) return; // Ensure user is defined
-      const url = `${this.apiBaseUrl}${this.user.id}/folders/${
-        folderPath ? folderPath + "/" : ""
-      }`;
+      if (!this.user) return;
       try {
-        const response = await axios.get(url, { withCredentials: true });
+        // call api GET
+        const response = await listFolders(this.user.id, folderPath);
+        // get the folders and files from response
         this.folders = response.data.folders;
         this.files = response.data.files;
         console.log(response.data);
-        this.currentPath = folderPath.split("/").filter(Boolean); // Update the path for the breadcrumb
+        // update current path for breadcrumb ui updates
+        this.currentPath = folderPath.split("/").filter(Boolean);
       } catch (error) {
         if (error.response && error.response.status === 404) {
           this.folders = [];
           this.files = [];
-          this.currentPath = folderPath.split("/").filter(Boolean); // Update path even if empty
+          this.currentPath = folderPath.split("/").filter(Boolean);
         } else {
           console.error("Failed to fetch data:", error);
         }
       }
     },
     handleBreadcrumbNavigate(path) {
-      // Clear path on navigation to root or reconstruct it based on click
+      // Adjust the currentPath based on navigation
       if (path === "") {
         this.currentPath = [];
       } else {
@@ -86,14 +86,15 @@ export default {
     },
   },
   created() {
-    const authStore = useAuthStore(); // Use auth store
-    this.user = authStore.user; // Set user from auth store
+    const authStore = useAuthStore();
+    this.user = authStore.user;
     if (this.user) {
       this.fetchData();
     }
   },
 };
 </script>
+
 <style>
 .dashboard {
   padding-top: 90px;

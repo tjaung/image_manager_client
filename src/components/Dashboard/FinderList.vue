@@ -21,10 +21,9 @@
 </template>
 
 <script>
-import FolderItem from "@/components/Dashboard/FileElements/FolderItem.vue";
+import FolderItem from "@/components/Dashboard/FolderElements/FolderItem.vue";
 import FileItem from "@/components/Dashboard/FileElements/FileItem.vue";
-import ImageOverlay from "../ImageOverlay.vue";
-import Toolbar from "../Toolbar/Toolbar.vue";
+import ImageOverlay from "./ImageOverlay.vue";
 
 export default {
   components: {
@@ -80,7 +79,8 @@ export default {
         return;
       }
       console.log(this.apiBaseUrl);
-      this.selectedImageUrl = `${process.env.VUE_APP_API_BASE_URL}${file.file}`; // Assuming MEDIA_URL is part of the file.file path
+      const filePath = file.file.replace(/^\//, "");
+      this.selectedImageUrl = `${process.env.VUE_APP_SERVER_URL}${filePath}`; // Assuming MEDIA_URL is part of the file.file path
       console.log("Selected Image URL:", this.selectedImageUrl);
       this.$refs.imageOverlay.show();
     },

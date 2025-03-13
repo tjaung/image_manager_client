@@ -1,6 +1,6 @@
 <template>
   <div>
-    <!-- Conditionally show buttons based on whether a file has been selected -->
+    <!-- Show "Add Image" button when no file is selected, "Upload" when one is ready -->
     <button
       v-if="!selectedFile"
       @click="triggerFileInput"
@@ -21,8 +21,14 @@
 </template>
 
 <script lang="ts">
-import { ref, getCurrentInstance } from "vue";
-import axios from "axios";
+import { ref, Ref, getCurrentInstance, SetupContext } from "vue";
+import { uploadFile } from "@/api/fileServices"; // Import file upload service
+
+interface Props {
+  apiBaseUrl: string;
+  userId: string;
+  currentPath: string;
+}
 
 export default {
   props: {
@@ -30,9 +36,9 @@ export default {
     userId: String,
     currentPath: String,
   },
-  setup(props, { emit }) {
-    const fileInput = ref(null);
-    const selectedFile = ref(null);
+  setup(props: Props, { emit }: SetupContext) {
+    const fileInput: Ref<HTMLInputElement | null> = ref(null);
+    const selectedFile: Ref<File | null> = ref(null);
     const { appContext } = getCurrentInstance()!;
 
     // Utility function to show toast notifications
@@ -44,26 +50,26 @@ export default {
         life: 3000,
       });
     };
+
     // Trigger the file input dialog
     const triggerFileInput = () => {
-      console.log("current path: ", props.currentPath);
       if (fileInput.value) {
         fileInput.value.click();
       }
     };
 
     // Handle file selection
-    const handleFileSelected = (event) => {
-      selectedFile.value = event.target.files[0];
-      if (selectedFile.value) {
-        showToast("success", "Success", "Image added successful!");
+    const handleFileSelected = (event: Event) => {
+      const target = event.target as HTMLInputElement;
+      if (target.files && target.files[0]) {
+        selectedFile.value = target.files[0];
+        showToast("success", "Success", "Image added successfully!");
         console.log("File ready to upload:", selectedFile.value.name);
       }
     };
 
-    // Perform the file upload
+    // Perform the file upload using fileService.uploadFile
     const performUpload = async () => {
-      console.log("current path: ", props.currentPath);
       if (!selectedFile.value) {
         alert("No file selected.");
         return;
@@ -71,26 +77,16 @@ export default {
 
       const formData = new FormData();
       formData.append("file", selectedFile.value);
-      const constructed_url =
-        `${props.userId}/folders/${props.currentPath}/upload/`.replace(
-          /\/\//g,
-          "/"
-        );
-      const url = `${props.apiBaseUrl}${constructed_url}`;
-      console.log(url);
+
       try {
-        await axios.post(url, formData, {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-          withCredentials: true,
-        });
-        showToast("success", "Success", "Image uploaded successful!");
-        emit("update");
-        selectedFile.value = null; // Clear the selected file after uploading
+        // Use the uploadFile service: it constructs the endpoint using the userId and folderPath.
+        await uploadFile(props.userId, formData, props.currentPath);
+        showToast("success", "Success", "Image uploaded successfully!");
+        emit("update"); // Notify parent to refresh data
+        selectedFile.value = null; // Clear the file selection
       } catch (error) {
         console.error("Error uploading image:", error);
-        showToast("error", "Error", "Failed to upload image");
+        showToast("error", "Error", "Failed to upload image.");
       }
     };
 
@@ -111,5 +107,7 @@ button {
   padding: 8px 16px;
   font-size: 16px;
   cursor: pointer;
+  background: #f5f5f5;
+  border: 1px solid #ccc;
 }
 </style>

@@ -16,9 +16,9 @@
 </template>
 
 <script>
-import AddFolderButton from "./AddFolder.vue";
-import UploadImageButton from "./UploadImage.vue";
-import axios from "axios";
+import AddFolderButton from "./FolderElements/AddFolder.vue";
+import UploadImageButton from "./FileElements/UploadImage.vue";
+import { listFolders } from "@/api/folderServices";
 
 export default {
   components: {
@@ -31,24 +31,20 @@ export default {
     currentPath: String,
   },
   methods: {
-    handleUpdate() {
-      axios
-        .get(
-          `${this.apiBaseUrl}${this.userId}/folders/${
-            this.currentPath ? this.currentPath + "/" : ""
-          }`
-        )
-        .then((response) => {
-          // Assuming the response contains the folders and files in an expected format
-          this.$emit("refreshData", response.data); // Emitting an event or directly setting data
-        })
-        .catch((error) => {
-          console.error("Failed to refresh data:", error);
-        });
+    async handleUpdate() {
+      try {
+        // Use the folder service to get the folder data.
+        const response = await listFolders(this.userId, this.currentPath);
+        // Emit an event with the refreshed data.
+        this.$emit("refreshData", response.data);
+      } catch (error) {
+        console.error("Failed to refresh data:", error);
+      }
     },
   },
 };
 </script>
+
 <style>
 .toolbar {
   display: flex;

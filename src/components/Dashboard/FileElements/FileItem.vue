@@ -3,7 +3,7 @@
     <span class="icon" aria-hidden="true">📄</span>
     <div class="file-details">
       <div class="item-name">
-        {{ file.file.replace("/media/uploads/", "") }}
+        {{ file.filename }}
       </div>
       <div class="detail-container">
         <div class="item-detail">{{ file.width }}x{{ file.height }}px</div>
@@ -18,9 +18,9 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
 import { computed } from "vue";
-import axios from "axios";
+import { getFile, deleteFile } from "@/api/fileServices"; // Make sure the filename matches
 
 export default {
   name: "FileItem",
@@ -44,7 +44,13 @@ export default {
     },
   },
   emits: ["file-clicked", "file-deleted"],
-  setup(props, { emit }) {
+  setup(
+    props: any,
+    {
+      emit,
+    }: { emit: (event: "file-clicked" | "file-deleted", payload?: any) => void }
+  ) {
+    // Compute file size in KB and format the upload date.
     const fileSizeInKB = computed(() =>
       (props.file.filesize / 1024).toFixed(2)
     );
@@ -52,21 +58,20 @@ export default {
       new Date(props.file.uploaded_at).toLocaleDateString()
     );
 
+    // Retrieve file details using the getFile service (which sends folder_path and file_name as query parameters)
     async function onClick() {
-      // Ensure no leading slashes to prevent double slashes in URL
-      const file = props.file.filename.replace(/^\//, ""); // Remove any leading slash from filename
-      const folderPath = props.folderPath.replace(/^\//, ""); // Remove any leading slash from folder path
-
-      // Ensure no trailing slash on folderPath to prevent double slashes before filename
-      const cleanedFolderPath = folderPath ? `${folderPath}/` : ""; // Append a slash only if folderPath is not empty
-      console.log(cleanedFolderPath);
-      // Construct the URL
-      const url = `${props.apiBaseUrl}${props.userId}/folders/${cleanedFolderPath}${file}/`;
-      console.log("Constructed URL:", url);
-
+      // Remove any leading slashes from file name and folderPath
+      console.log(props.file.filename);
+      console.log(props.folderPath);
+      const fileName = props.file.filename.replace(/^\//, "");
+      const cleanedFolderPath = props.folderPath.replace(/^\//, "");
       try {
-        const response = await axios.get(url, { withCredentials: true });
-        console.log("Emitting file-clicked with data", response.data);
+        const response = await getFile(
+          props.userId,
+          cleanedFolderPath,
+          props.file.id
+        );
+        console.log("Emitting file-clicked with data:", response.data);
         emit("file-clicked", response.data);
       } catch (error) {
         console.error("Failed to fetch file details:", error);
@@ -74,22 +79,12 @@ export default {
       }
     }
 
+    // Delete the file using the deleteFile service
     async function onDeleteClick() {
       if (confirm(`Are you sure you want to delete "${props.file.file}"?`)) {
         try {
-          const file = props.file.filename.replace(/^\//, ""); // Remove any leading slash from filename
-          const folderPath = props.folderPath.replace(/^\//, ""); // Remove any leading slash from folder path
-
-          // Ensure no trailing slash on folderPath to prevent double slashes before filename
-          const cleanedFolderPath = folderPath ? `${folderPath}/` : ""; // Append a slash only if folderPath is not empty
-          console.log(cleanedFolderPath);
-          const deleteUrl = `${props.apiBaseUrl}${props.userId}/${props.file.id}/delete/`;
-          //   const deleteUrl = `${props.apiBaseUrl}${props.userId}/folders/${cleanedFolderPath}${props.file.id}/delete/`;
-          console.log("delete url: ", deleteUrl);
-          //   <uuid:user_id>/folders/<path:folder_path>/<uuid:file_id>/delete/
-          //   http://127.0.0.1:8000/93f1f27a-a81b-4a50-864c-66a95bec92cf/folders/docs/f7d92f20-d7bd-41dc-91ac-4be4f9ef34ee/delete/
-          await axios.delete(deleteUrl, { withCredentials: true });
-          http: alert("File deleted successfully");
+          await deleteFile(props.userId, props.file.id);
+          alert("File deleted successfully.");
           emit("file-deleted", props.file);
         } catch (error) {
           console.error("Error deleting file:", error);
@@ -98,7 +93,12 @@ export default {
       }
     }
 
-    return { onClick, onDeleteClick, fileSizeInKB, formattedDate };
+    return {
+      onClick,
+      onDeleteClick,
+      fileSizeInKB,
+      formattedDate,
+    };
   },
 };
 </script>
@@ -128,23 +128,22 @@ export default {
 }
 .item-name {
   font-weight: 500;
-  flex-shrink: 0; /* Ensures the name doesn't shrink */
+  flex-shrink: 0;
 }
 .detail-container {
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  flex-grow: 1; /* Allows this container to take up remaining space */
+  flex-grow: 1;
 }
 .item-detail {
-  margin-left: 20px; /* Spacing between details */
-  white-space: nowrap; /* Keeps the text from wrapping */
+  margin-left: 20px;
+  white-space: nowrap;
   color: rgb(89, 89, 89);
   font-size: 0.9rem;
 }
-
 .delete-button {
-  margin-left: 20px; /* Ensures some space from the details */
+  margin-left: 20px;
   cursor: pointer;
   background: none;
   border: none;

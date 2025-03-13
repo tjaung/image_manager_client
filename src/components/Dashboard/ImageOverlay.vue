@@ -48,11 +48,15 @@ export default {
   position: relative;
   max-width: 90%;
   max-height: 90%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .modal-content img {
-  max-width: 100%;
-  max-height: 100%;
-  display: block; /* Removes bottom space/gap */
+  max-width: 100%; /* Ensures the image does not exceed the width of the container */
+  max-height: 85vh; /* Ensures the image does not exceed the height of the container */
+  object-fit: contain; /* Ensures the image is scaled properly to fit within the container without altering its aspect ratio */
+  display: block;
 }
 </style>

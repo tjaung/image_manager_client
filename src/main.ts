@@ -34,6 +34,6 @@ app.component("Toast", Toast);
 // Rehydrate session by calling the refresh endpoint and updating the store.
 // Pass the pinia instance so that getActivePinia() returns correctly.
 const authStore = useAuthStore(pinia);
-authStore.rehydrateSession();
+// authStore.rehydrateSession();
 
 app.mount("#app");

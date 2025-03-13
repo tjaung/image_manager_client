@@ -6,6 +6,9 @@ import axios from "axios";
 import PrimeVue from "primevue/config";
 import ToastService from "primevue/toastservice";
 import Toast from "primevue/toast";
+import ConfirmationService from "primevue/confirmationservice";
+import { ConfirmDialog } from "primevue";
+
 import { useAuthStore } from "./store/auth";
 
 import "@/assets/global.css";
@@ -28,8 +31,12 @@ app.use(PrimeVue, {
     },
   },
 });
+
+// Use some primevue ui components
 app.use(ToastService);
+app.use(ConfirmationService);
 app.component("Toast", Toast);
+app.component("ConfirmDialog", ConfirmDialog);
 
 // Rehydrate session by calling the refresh endpoint and updating the store.
 // Pass the pinia instance so that getActivePinia() returns correctly.

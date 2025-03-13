@@ -1,6 +1,6 @@
 <template>
-  <div>
-    <!-- Show "Add Image" button when no file is selected, "Upload" when one is ready -->
+  <div class="upload-wrapper">
+    <!-- If there's no file, show Add Image; otherwise show Upload -->
     <button
       v-if="!selectedFile"
       @click="triggerFileInput"
@@ -10,11 +10,21 @@
     </button>
     <button v-else @click="performUpload">Upload</button>
 
-    <!-- Hidden file input for handling file uploads -->
+    <!-- The X button is ALWAYS in the layout, but hidden when no file is selected -->
+    <button
+      class="clear-button"
+      :class="{ hidden: !selectedFile }"
+      @click="clearSelectedFile"
+    >
+      X
+    </button>
+
+    <!-- Hidden file input for images only -->
     <input
       type="file"
       ref="fileInput"
       style="display: none"
+      accept="image/*"
       @change="handleFileSelected"
     />
   </div>
@@ -22,7 +32,7 @@
 
 <script lang="ts">
 import { ref, Ref, getCurrentInstance, SetupContext } from "vue";
-import { uploadFile } from "@/api/fileServices"; // Import file upload service
+import { uploadFile } from "@/api/fileServices";
 
 interface Props {
   apiBaseUrl: string;
@@ -41,7 +51,6 @@ export default {
     const selectedFile: Ref<File | null> = ref(null);
     const { appContext } = getCurrentInstance()!;
 
-    // Utility function to show toast notifications
     const showToast = (severity: string, summary: string, detail: string) => {
       appContext.config.globalProperties.$toast.add({
         severity,
@@ -51,24 +60,36 @@ export default {
       });
     };
 
-    // Trigger the file input dialog
     const triggerFileInput = () => {
       if (fileInput.value) {
         fileInput.value.click();
       }
     };
 
-    // Handle file selection
     const handleFileSelected = (event: Event) => {
       const target = event.target as HTMLInputElement;
-      if (target.files && target.files[0]) {
-        selectedFile.value = target.files[0];
-        showToast("success", "Success", "Image added successfully!");
-        console.log("File ready to upload:", selectedFile.value.name);
+      if (!target.files || !target.files[0]) return;
+
+      const file = target.files[0];
+      // Ensure it's an image
+      if (!file.type.startsWith("image/")) {
+        showToast("error", "Invalid file", "Please select an image file.");
+        target.value = "";
+        return;
+      }
+
+      selectedFile.value = file;
+      showToast("success", "Success", "Image added successfully!");
+      console.log("File ready to upload:", selectedFile.value.name);
+    };
+
+    const clearSelectedFile = () => {
+      selectedFile.value = null;
+      if (fileInput.value) {
+        fileInput.value.value = ""; // Clear input
       }
     };
 
-    // Perform the file upload using fileService.uploadFile
     const performUpload = async () => {
       if (!selectedFile.value) {
         alert("No file selected.");
@@ -79,11 +100,10 @@ export default {
       formData.append("file", selectedFile.value);
 
       try {
-        // Use the uploadFile service: it constructs the endpoint using the userId and folderPath.
         await uploadFile(props.userId, formData, props.currentPath);
         showToast("success", "Success", "Image uploaded successfully!");
         emit("update"); // Notify parent to refresh data
-        selectedFile.value = null; // Clear the file selection
+        clearSelectedFile();
       } catch (error) {
         console.error("Error uploading image:", error);
         showToast("error", "Error", "Failed to upload image.");
@@ -95,6 +115,7 @@ export default {
       selectedFile,
       triggerFileInput,
       handleFileSelected,
+      clearSelectedFile,
       performUpload,
     };
   },
@@ -102,12 +123,38 @@ export default {
 </script>
 
 <style scoped>
+.upload-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  /* or you can use margin on buttons, up to you */
+}
+
 button {
-  margin: 10px;
   padding: 8px 16px;
   font-size: 16px;
+  width: 120px;
+  height: 40px;
   cursor: pointer;
   background: #f5f5f5;
   border: 1px solid #ccc;
+}
+
+.clear-button {
+  color: #c00;
+  background: none;
+  border: none;
+  font-weight: bold;
+  font-size: 18px;
+  /* same size as other buttons, or adjust as needed */
+  width: 40px;
+  height: 40px;
+  cursor: pointer;
+  align-self: center;
+}
+
+/* Hide the X button visually but keep its space in the layout */
+.hidden {
+  visibility: hidden;
 }
 </style>

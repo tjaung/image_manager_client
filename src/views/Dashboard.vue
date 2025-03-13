@@ -7,7 +7,7 @@
         :apiBaseUrl="apiBaseUrl"
         :userId="user.id"
         :currentPath="currentPath.join('/')"
-        @update="refreshData"
+        @refreshData="handleUpdate"
       />
     </div>
     <FinderList
@@ -16,6 +16,7 @@
       :userId="user.id"
       :currentFolderPath="currentPath.join('/')"
       @navigate="navigateToFolder"
+      @refresh="handleUpdate"
     />
   </div>
 </template>
@@ -24,8 +25,8 @@
 import Breadcrumb from "@/components/Dashboard/Breadcrumb.vue";
 import FinderList from "@/components/Dashboard/FinderList.vue";
 import Toolbar from "@/components/Dashboard/Toolbar.vue";
-import { useAuthStore } from "@/store/auth";
 import { listFolders } from "@/api/folderServices";
+import { useAuthStore } from "@/store/auth";
 
 export default {
   components: {
@@ -33,63 +34,74 @@ export default {
     FinderList,
     Toolbar,
   },
+  props: {
+    apiBaseUrl: String,
+    userId: String,
+    currentPath: String,
+  },
   data() {
     return {
       folders: [],
       files: [],
-      currentPath: [], // Array of path segments
-      apiBaseUrl: process.env.VUE_APP_API_BASE_URL,
+      // currentPath as an array (even if passed as a string, we'll convert it)
+      currentPath: [],
       user: null,
       isLoading: false,
     };
   },
   methods: {
-    async refreshData() {
-      this.isLoading = true;
-      await this.fetchData(this.currentPath.join("/"));
-      this.isLoading = false;
-    },
+    // Fetch folder contents based on the provided folder path (as a string).
     async fetchData(folderPath = "") {
       if (!this.user) return;
       try {
-        // call api GET
         const response = await listFolders(this.user.id, folderPath);
-        // get the folders and files from response
+        console.log("Fetched data:", response.data);
         this.folders = response.data.folders;
         this.files = response.data.files;
-        console.log(response.data);
-        // update current path for breadcrumb ui updates
+        // Update the internal currentPath array based on the folderPath string.
         this.currentPath = folderPath.split("/").filter(Boolean);
       } catch (error) {
-        if (error.response && error.response.status === 404) {
-          this.folders = [];
-          this.files = [];
-          this.currentPath = folderPath.split("/").filter(Boolean);
-        } else {
-          console.error("Failed to fetch data:", error);
-        }
+        console.error("Failed to fetch data:", error);
+        // Optionally clear state on error.
+        this.folders = [];
+        this.files = [];
+        this.currentPath = folderPath.split("/").filter(Boolean);
       }
     },
+    // Called when Toolbar emits "update"
+    async handleUpdate() {
+      console.log("Dashboard handleUpdate called");
+      // Reconstruct the folderPath string from the currentPath array.
+      const folderPath = this.currentPath.join("/");
+      await this.fetchData(folderPath);
+      // Optionally, bubble up the event:
+      // this.$emit("refreshData", { folders: this.folders, files: this.files });
+    },
+    // Handle breadcrumb navigation by updating currentPath and refreshing data.
     handleBreadcrumbNavigate(path) {
-      // Adjust the currentPath based on navigation
       if (path === "") {
         this.currentPath = [];
       } else {
         const pathIndex = this.currentPath.indexOf(path);
         this.currentPath = this.currentPath.slice(0, pathIndex + 1);
       }
-      this.refreshData();
+      this.handleUpdate();
     },
+    // When a folder is clicked in FinderList, update currentPath and refresh data.
     navigateToFolder(folder) {
       this.currentPath.push(folder);
-      this.refreshData();
+      this.handleUpdate();
     },
   },
   created() {
     const authStore = useAuthStore();
     this.user = authStore.user;
     if (this.user) {
-      this.fetchData();
+      // Initialize with root (empty folderPath).
+      this.fetchData("");
+    } else {
+      // If user is not logged in, push them to '/login'
+      this.$router.push("/login");
     }
   },
 };

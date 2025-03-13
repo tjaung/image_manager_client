@@ -34,9 +34,11 @@ export default {
     async handleUpdate() {
       try {
         // Use the folder service to get the folder data.
-        const response = await listFolders(this.userId, this.currentPath);
+        console.log("UPDATE UI");
+        // const response = await listFolders(this.userId, this.currentPath);
+        // console.log("new ui: ", response.data);
         // Emit an event with the refreshed data.
-        this.$emit("refreshData", response.data);
+        this.$emit("refreshData", true);
       } catch (error) {
         console.error("Failed to refresh data:", error);
       }
@@ -49,5 +51,7 @@ export default {
 .toolbar {
   display: flex;
   flex-direction: row;
+  padding-left: 10px;
+  padding-right: 10px;
 }
 </style>

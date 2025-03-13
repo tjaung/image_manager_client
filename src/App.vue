@@ -1,6 +1,7 @@
 <template>
   <div id="app">
     <Toast />
+    <ConfirmDialog />
     <Navbar />
     <!-- The router-view renders the component for the current route -->
     <router-view />

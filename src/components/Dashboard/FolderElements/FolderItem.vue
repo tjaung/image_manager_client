@@ -12,7 +12,7 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
 import { useAuthStore } from "@/store/auth";
 import DeleteFolderButton from "./DeleteFolderButton.vue";
 
@@ -36,6 +36,7 @@ export default {
 
     function onFolderDeleted(deletedFolder) {
       // Bubble up the folder-deleted event to parent components.
+      console.log("FOLDER DELETED SIGNAL IN FOLDER ITEM");
       emit("folder-deleted", deletedFolder);
     }
 

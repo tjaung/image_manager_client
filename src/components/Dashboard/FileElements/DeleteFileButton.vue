@@ -1,35 +1,29 @@
 <template>
-  <!-- <ConfirmDialog /> -->
   <button class="delete-button" @click.stop="confirmDeletion">Delete</button>
 </template>
 
 <script lang="ts">
-import { deleteFolder } from "@/api/folderServices";
+import { defineComponent } from "vue";
+import { deleteFile } from "@/api/fileServices";
 import { useAuthStore } from "@/store/auth";
-import { getCurrentInstance, SetupContext } from "vue";
-import ConfirmDialog from "primevue/confirmdialog";
+import { getCurrentInstance } from "vue";
 import { useConfirm } from "primevue/useconfirm";
 
-interface Folder {
-  id?: string | number;
-  name?: string;
-  // any other fields you need
-}
-
-interface Props {
-  folder: Folder;
-}
-
-export default {
-  name: "DeleteFolderButton",
+export default defineComponent({
+  name: "DeleteFileButton",
   props: {
-    folder: {
+    // We'll need at least the file object and userId
+    file: {
       type: Object,
       required: true,
     },
+    userId: {
+      type: String,
+      required: true,
+    },
   },
-  emits: ["folder-deleted"],
-  setup(props: Props, { emit }: SetupContext) {
+  emits: ["file-deleted"],
+  setup(props, { emit }) {
     // Get user state
     const authStore = useAuthStore();
     // Ensure the user is available from the auth store
@@ -50,26 +44,26 @@ export default {
     const confirm = useConfirm();
     // The function that triggers the PrimeVue confirmation dialog
     async function confirmDeletion() {
-      console.log("DELETE FOLDER");
+      console.log("DELETE FILE");
       if (!user) {
         showToast("error", "Error", "User is not authenticated");
         return;
       }
 
       confirm.require({
-        message: `Are you sure you want to delete "${props.folder.name}"?`,
+        message: `Are you sure you want to delete "${props.file.file}"?`,
         header: "Delete Confirmation",
         icon: "pi pi-exclamation-triangle",
         accept: async () => {
           // If user accepts, do the delete call
           try {
-            await deleteFolder(user.id, props.folder.id);
+            await deleteFile(props.userId, props.file.id);
             showToast(
               "success",
               "Success",
-              `Folder "${props.folder.name}" deleted successfully`
+              `Folder "${props.file.file}" deleted successfully`
             );
-            emit("folder-deleted", props.folder);
+            emit("file-deleted", props.file);
           } catch (error) {
             showToast("error", "Error", "Failed to delete folder.");
           }
@@ -80,12 +74,25 @@ export default {
       });
     }
 
+    async function onDeleteClick() {
+      if (confirm(`Are you sure you want to delete "${props.file.file}"?`)) {
+        try {
+          await deleteFile(props.userId, props.file.id);
+          alert("File deleted successfully.");
+          // Emit event so the parent knows this file is deleted
+          emit("file-deleted", props.file);
+        } catch (error) {
+          console.error("Error deleting file:", error);
+          alert("Failed to delete file.");
+        }
+      }
+    }
+
     return {
-      // onDeleteClick,
       confirmDeletion,
     };
   },
-};
+});
 </script>
 
 <style scoped>

@@ -14,6 +14,7 @@
         :userId="userId"
         :apiBaseUrl="apiBaseUrl"
         @file-clicked="handleFileClick"
+        @file-deleted="refreshList"
       />
     </div>
     <ImageOverlay ref="imageOverlay" :imageSrc="selectedImageUrl" />

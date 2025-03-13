@@ -14,16 +14,26 @@
         <div class="item-detail">Uploaded: {{ formattedDate }}</div>
       </div>
     </div>
-    <button class="delete-button" @click.stop="onDeleteClick">Delete</button>
+
+    <!-- Use the new DeleteFileButton component -->
+    <DeleteFileButton
+      :file="file"
+      :userId="userId"
+      @file-deleted="onFileDeleted"
+    />
   </div>
 </template>
 
 <script lang="ts">
 import { computed } from "vue";
-import { getFile, deleteFile } from "@/api/fileServices"; // Make sure the filename matches
+import { getFile } from "@/api/fileServices";
+import DeleteFileButton from "./DeleteFileButton.vue"; // <-- Import new component
 
 export default {
   name: "FileItem",
+  components: {
+    DeleteFileButton, // Register it locally
+  },
   props: {
     file: {
       type: Object,
@@ -44,26 +54,19 @@ export default {
     },
   },
   emits: ["file-clicked", "file-deleted"],
-  setup(
-    props: any,
-    {
-      emit,
-    }: { emit: (event: "file-clicked" | "file-deleted", payload?: any) => void }
-  ) {
-    // Compute file size in KB and format the upload date.
+  setup(props, { emit }) {
+    // Convert bytes to KB
     const fileSizeInKB = computed(() =>
       (props.file.filesize / 1024).toFixed(2)
     );
+    // Format date
     const formattedDate = computed(() =>
       new Date(props.file.uploaded_at).toLocaleDateString()
     );
 
-    // Retrieve file details using the getFile service (which sends folder_path and file_name as query parameters)
+    // Called when user clicks anywhere on the row (except the delete button)
     async function onClick() {
-      // Remove any leading slashes from file name and folderPath
-      console.log(props.file.filename);
-      console.log(props.folderPath);
-      const fileName = props.file.filename.replace(/^\//, "");
+      // Remove leading slash from folderPath if any
       const cleanedFolderPath = props.folderPath.replace(/^\//, "");
       try {
         const response = await getFile(
@@ -71,7 +74,6 @@ export default {
           cleanedFolderPath,
           props.file.id
         );
-        console.log("Emitting file-clicked with data:", response.data);
         emit("file-clicked", response.data);
       } catch (error) {
         console.error("Failed to fetch file details:", error);
@@ -79,23 +81,16 @@ export default {
       }
     }
 
-    // Delete the file using the deleteFile service
-    async function onDeleteClick() {
-      if (confirm(`Are you sure you want to delete "${props.file.file}"?`)) {
-        try {
-          await deleteFile(props.userId, props.file.id);
-          alert("File deleted successfully.");
-          emit("file-deleted", props.file);
-        } catch (error) {
-          console.error("Error deleting file:", error);
-          alert("Failed to delete file.");
-        }
-      }
+    // Called when DeleteFileButton emits "file-deleted"
+    function onFileDeleted(file: any) {
+      console.log("FILE DELETE UI UPDATE");
+      // Re-emit so the parent (FinderList, or wherever you use <FileItem>) knows
+      emit("file-deleted", file);
     }
 
     return {
       onClick,
-      onDeleteClick,
+      onFileDeleted,
       fileSizeInKB,
       formattedDate,
     };
@@ -141,13 +136,5 @@ export default {
   white-space: nowrap;
   color: rgb(89, 89, 89);
   font-size: 0.9rem;
-}
-.delete-button {
-  margin-left: 20px;
-  cursor: pointer;
-  background: none;
-  border: none;
-  color: #c00;
-  font-weight: bold;
 }
 </style>

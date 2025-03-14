@@ -80,7 +80,6 @@ export default {
 
       selectedFile.value = file;
       showToast("success", "Success", "Image added successfully!");
-      console.log("File ready to upload:", selectedFile.value.name);
     };
 
     const clearSelectedFile = () => {

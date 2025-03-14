@@ -44,7 +44,6 @@ export default defineComponent({
     const confirm = useConfirm();
     // The function that triggers the PrimeVue confirmation dialog
     async function confirmDeletion() {
-      console.log("DELETE FILE");
       if (!user) {
         showToast("error", "Error", "User is not authenticated");
         return;

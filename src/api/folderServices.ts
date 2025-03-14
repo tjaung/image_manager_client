@@ -34,7 +34,6 @@ export const createFolder = (
   if (folderPath) {
     endpoint += `?folder_path=${encodeURIComponent(folderPath)}`;
   }
-  console.log("POST to endpoint:", endpoint);
   return apiClient.post(endpoint, folderData);
 };
 

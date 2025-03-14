@@ -51,7 +51,6 @@ export default defineComponent({
 
       try {
         const response = await signup(api_signup_url, data);
-        console.log("Signup successful:", response.data);
         showToast("success", "Success", "Signup successful!");
         router.push("/login");
       } catch (error: any) {

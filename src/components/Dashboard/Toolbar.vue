@@ -34,11 +34,6 @@ export default {
   methods: {
     async handleUpdate() {
       try {
-        // Use the folder service to get the folder data.
-        console.log("UPDATE UI");
-        // const response = await listFolders(this.userId, this.currentPath);
-        // console.log("new ui: ", response.data);
-        // Emit an event with the refreshed data.
         this.$emit("refreshData", true);
       } catch (error) {
         console.error("Failed to refresh data:", error);

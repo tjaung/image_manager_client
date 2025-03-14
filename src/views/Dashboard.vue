@@ -75,9 +75,7 @@ export default {
     async fetchData(folderPath = "") {
       if (!this.user) return;
       try {
-        console.log("GET ", folderPath);
         const response = await listFolders(this.user.id, folderPath);
-        console.log("Fetched data:", response.data);
         this.folders = response.data.folders;
         this.files = response.data.files;
         // Update the internal currentPath array based on the folderPath string.
@@ -92,7 +90,6 @@ export default {
     },
     // Called when Toolbar emits "update"
     async handleUpdate() {
-      console.log("Dashboard handleUpdate called");
       // Reconstruct the folderPath string from the currentPath array.
       const folderPath = this.currentPath.join("/");
       await this.fetchData(folderPath);
@@ -101,11 +98,17 @@ export default {
     },
     // Handle breadcrumb navigation by updating currentPath and refreshing data.
     handleBreadcrumbNavigate(path) {
+      console.log("Dashboard breadcrumb path: ", path);
+      const parts = path.split("/");
+      const goTo = parts[parts.length - 1];
+      console.log(goTo);
       if (path === "") {
         this.currentPath = [];
       } else {
-        const pathIndex = this.currentPath.indexOf(path);
+        const pathIndex = this.currentPath.indexOf(goTo);
         this.currentPath = this.currentPath.slice(0, pathIndex + 1);
+        console.log(pathIndex);
+        console.log(this.currentPath);
       }
       this.handleUpdate();
     },
@@ -118,7 +121,6 @@ export default {
   created() {
     const authStore = useAuthStore();
     this.user = authStore.user;
-    console.log("user: ", this.user);
     if (this.user) {
       // Initialize with root (empty folderPath).
       this.fetchData("");

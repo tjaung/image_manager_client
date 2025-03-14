@@ -72,17 +72,12 @@ export default {
       this.$emit("refresh");
     },
     handleFileClick(file) {
-      console.log("File clicked received:", file);
-      console.log("Opening image:", file.file);
-      console.log("ImageOverlay ref:", this.$refs.imageOverlay);
       if (!this.$refs.imageOverlay) {
         console.error("ImageOverlay component ref is not available");
         return;
       }
-      console.log(this.apiBaseUrl);
       const filePath = file.file.replace(/^\//, "");
       this.selectedImageUrl = `${process.env.VUE_APP_SERVER_URL}${filePath}`; // Assuming MEDIA_URL is part of the file.file path
-      console.log("Selected Image URL:", this.selectedImageUrl);
       this.$refs.imageOverlay.show();
     },
   },

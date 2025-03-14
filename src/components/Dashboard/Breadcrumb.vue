@@ -1,5 +1,6 @@
 <template>
   <nav class="breadcrumb">
+    <span>Navigation:</span>
     <!-- Always allow going back to the root -->
     <span class="breadcrumb-item">
       <a href="#" @click="navigateTo('')"> ~ </a>
@@ -46,6 +47,7 @@ export default {
     },
     navigateTo(path) {
       // Navigate to root or any specified path
+      console.log("breadcrumb to path: ", path);
       this.$emit("navigate", path);
     },
   },
@@ -57,6 +59,7 @@ export default {
   display: flex;
   align-items: center;
   font-size: 16px;
+  padding-left: 10px;
 }
 
 .breadcrumb-item {

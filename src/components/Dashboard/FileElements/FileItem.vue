@@ -99,7 +99,6 @@ export default {
 
     // Called when DeleteFileButton emits "file-deleted"
     function onFileDeleted(file: any) {
-      console.log("FILE DELETE UI UPDATE");
       // Re-emit so the parent (FinderList, or wherever you use <FileItem>) knows
       emit("file-deleted", file);
     }

@@ -44,7 +44,6 @@ export default defineComponent({
       loading.value = true;
       try {
         const response = await login(api_login_url, data);
-        console.log("Login successful:", response.data);
         // Update auth store – adjust based on your API response structure
         // For example, if your response is { user: { id, username } }
         authStore.login(response.data.token, response.data.user);

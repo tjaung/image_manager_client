@@ -26,7 +26,7 @@ This is a **Vue.js** application that provides an intuitive interface for managi
 
 ```
 git clone https://github.com/<yourgitusername>/image_manager_client.git
-cd image_manager_client/client
+cd image_manager_client/
 ```
 
 ### **2\. Install Dependencies**

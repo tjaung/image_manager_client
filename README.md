@@ -1,6 +1,7 @@
 # Vue.js Image Management App
 
-This is a **Vue.js** application that provides an intuitive interface for managing image files and folders. Users can upload images, create folders, and view metadata such as file size, dimensions, and color mode.
+This is a **Vue.js** application that provides an intuitive interface for managing image files and folders. Users can upload images, create folders, and view metadata such as file size, dimensions, and color mode.  
+If you are viewing this application and you are from **DigiM**, please check out the **About** and **Documentation** pages via the navigation bar.
 
 ## Features
 

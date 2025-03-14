@@ -136,8 +136,14 @@ button {
   width: 120px;
   height: 40px;
   cursor: pointer;
-  background: #f5f5f5;
+  background: var(--color-brand--light-purple-20);
+  color: var(--text-color--primary-blue);
   border: 1px solid #ccc;
+  transition: 0.3s;
+}
+button:hover {
+  background-color: rgba(127, 0, 245, 0.75);
+  color: #fff;
 }
 
 .clear-button {

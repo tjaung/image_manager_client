@@ -3,7 +3,7 @@
     <AuthForm :loading="loading" mode="login" @submit="handleLogin" />
     <p>
       Don't have an account?
-      <router-link to="/signup">Sign Up</router-link>
+      <router-link to="/signup" class="link"><u>Sign Up</u></router-link>
     </p>
   </div>
 </template>
@@ -13,7 +13,7 @@ import { defineComponent, ref, getCurrentInstance } from "vue";
 import { useRouter } from "vue-router";
 import { useAuthStore } from "@/store/auth"; // Import the auth store
 import AuthForm from "@/components/Auth/AuthForm.vue";
-import axios from "axios";
+import { login } from "@/api/authServices";
 
 const api_base = process.env.VUE_APP_API_BASE_URL;
 const api_login_url = api_base + "auth/login";
@@ -43,7 +43,7 @@ export default defineComponent({
     }) => {
       loading.value = true;
       try {
-        const response = await axios.post(api_login_url, data);
+        const response = await login(api_login_url, data);
         console.log("Login successful:", response.data);
         // Update auth store – adjust based on your API response structure
         // For example, if your response is { user: { id, username } }
@@ -79,5 +79,16 @@ export default defineComponent({
   align-items: center;
   height: 100vh;
   padding-top: 60px; /* Adjust to account for your navbar height */
+}
+
+p {
+  color: #000000;
+}
+.link {
+  color: var(--color-brand--dark-purple);
+  transition: 0.3s;
+}
+.link:hover {
+  color: var(--color-brand--light-purple);
 }
 </style>

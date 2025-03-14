@@ -1,4 +1,7 @@
-/* Reset and base styles */
+/* -----------------------------
+   1. Reset & Base Styles
+------------------------------ */
+@import url("https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
 *,
 *::before,
 *::after {
@@ -7,24 +10,25 @@
   box-sizing: border-box;
 }
 
-/* Base font and scrolling behavior */
+/* Base font, line-height, and scrolling */
 html {
   font-size: 16px;
-  scroll-behavior: smooth;
+  color: var(--text-color--primary-blue);
   line-height: 1.5;
-  font-family: "Inter", sans-serif; /* Use your preferred font */
+  scroll-behavior: smooth;
+  font-family: "Inter", sans-serif;
 }
 
-/* Body styles */
 body {
-  background-color: #f0f2f5;
+  background-color: #f0f2f5; /* Subtle off-white background */
   color: #333;
   font-weight: 400;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  font-family: "Inter", sans-serif;
 }
 
-/* Media elements */
+/* Make media elements auto-scale */
 img,
 picture,
 video,
@@ -34,51 +38,27 @@ svg {
   max-width: 100%;
 }
 
-/* Links */
+/* Remove default list style */
+ul,
+ol {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+/* Links inherit text color; no underline */
 a {
   text-decoration: none;
   color: inherit;
 }
 
-/* Lists */
-ul,
-ol {
-  list-style: none;
-}
-
-/* Accessibility: focus outline */
+/* Add a visible outline on keyboard focus for accessibility */
 :focus {
   outline: 2px solid var(--primary-color);
   outline-offset: 2px;
 }
 
-/* Utility container class */
-.container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 1rem;
-}
-
-/* Button base styles */
-.btn {
-  display: inline-block;
-  background-color: var(--primary-color);
-  color: #fff;
-  padding: 0.75rem 1.5rem;
-  border-radius: 4px;
-  font-size: 1rem;
-  text-align: center;
-  border: none;
-  transition: background-color 0.3s ease;
-  cursor: pointer;
-}
-
-.btn:hover,
-.btn:focus {
-  background-color: var(--primary-hover-color);
-}
-
-/* Form elements */
+/* Provide a consistent base for form elements */
 input,
 button,
 textarea,
@@ -86,29 +66,93 @@ select {
   font: inherit;
 }
 
-/* Optional utility spacing classes */
-.mt-1 {
-  margin-top: 1rem;
-}
-.mb-1 {
-  margin-bottom: 1rem;
-}
-.pt-1 {
-  padding-top: 1rem;
-}
-.pb-1 {
-  padding-bottom: 1rem;
-}
-
-/* CSS Variables for easy theming */
+/* -----------------------------
+   2. CSS Variables
+------------------------------ */
 :root {
-  --primary-color: #005fcc;
-  --primary-hover-color: #004bb5;
-  --secondary-color: #f0f2f5;
-  --text-color: #333;
+  --background-color--background-primary: var(--color-neutral--white);
+  --text-color--text-primary: var(--color-neutral--black);
+  --text-color--primary-blue: var(--color-brand--dark-blue);
+  --color-brand--dark-blue: #0405c1;
+  --link-color--link-primary: var(--color-neutral--black);
+  --radius--1: var(--space--1);
+  --color-brand--black: black;
+  --border-color--border-primary: var(--color-brand--dark-blue);
+  --color-brand--dark-purple: #7f00f5;
+  --color-neutral--white: white;
+  --color-neutral--black: black;
+  --color-brand--white: white;
+  --radius--0-5: var(--space--0-5);
+  --background-color--background-secondary: var(
+    --color-neutral--neutral-lightest
+  );
+  --border-color--border-secondary: var(--color-brand--dark-purple);
+  --link-color--link-alternate: var(--color-neutral--white);
+  --background-color--background-tertiary: var(--color-neutral--neutral-light);
+  --background-color--background-alternate: var(--color-neutral--black);
+  --text-color--text-alternate: var(--color-neutral--white);
+  --text-color--text-secondary\<deleted\|relume-variable-text-color-2\>: var(
+    --color-brand--dark-blue
+  );
+  --background-color--background-success\<deleted\|relume-variable-background-color-6\>: #ecfdf3;
+  --text-color--text-success\<deleted\|relume-variable-text-color-4\>: var(
+    --color-system--success-green\<deleted\|relume-variable-system-color-1\>
+  );
+  --background-color--background-error\<deleted\|relume-variable-background-color-8\>: #fef3f2;
+  --text-color--text-error\<deleted\|relume-variable-text-color-5\>: var(
+    --color-system--error-red\<deleted\|relume-variable-system-color-5\>
+  );
+  --color-brand--light-blue: #008fe1;
+  --space--1: 1rem;
+  --background-color--background-light-blue: var(--color-brand--light-blue-20);
+  --background-color--button-gradient-2: var(--color-brand--dark-purple-30);
+  --color-brand--light-purple-20: #b55ef833;
+  --space--0-25: 0.25rem;
+  --color-brand--light-blue-20: #008fe133;
+  --color-neutral--neutral-lightest: #eee;
+  --text-color--accent: var(--color-brand--dark-purple);
+  --radius--1-5: var(--space--1-5);
+  --color-brand--light-blue-20-solid: #d8e8f8;
+  --light-grey-archive\<deleted\|variable-150a737e\>: #f4f4f4;
+  --color-brand--dark-blue-30: #0405c14d;
+  --space--0-75: 0.75rem;
+  --space--0-5: 0.5rem;
+  --radius--circle: 100vw;
+  --color-brand--dark-purple-30: #7f00f54d;
+  --accessible-components--dark-grey: #9b9b9b;
+  --black-archive\<deleted\|variable-dccb7db6\>: black;
+  --radius--0-25: var(--space--0-25);
+  --color-brand--light-purple: #b55ef8;
+  --accessible-components--dodger-blue: #1378d1;
+  --color-neutral--neutral-lighter: #ccc;
+  --color-neutral--neutral-light: #aaa;
+  --color-neutral--neutral: #666;
+  --color-neutral--neutral-dark: #444;
+  --color-neutral--neutral-darker: #222;
+  --color-neutral--neutral-darkest: #111;
+  --background-color--button-gradient-1: var(--color-brand--dark-blue-30);
+  --background-color--background-light-purple: var(
+    --color-brand--light-purple-20
+  );
+  --border-color--border-alternate: var(--color-brand--light-purple);
+  --border-color--border-light-blue: var(--color-brand--light-blue-20);
+  --border-color--border-dark-blue: var(--color-brand--dark-blue-30);
+  --border-color--border-light-purple: var(--color-brand--light-purple-20);
+  --border-color--border-dark-purple: var(--color-brand--dark-purple-30);
+  --link-color--link-secondary: var(--color-neutral--neutral-light);
+  --radius--2: var(--space--2);
+  --space--0: 0rem;
+  --space--0-125: 0.125rem;
+  --space--1-5: 1.5rem;
+  --space--2: 2rem;
+  --color-system--success-green\<deleted\|relume-variable-system-color-1\>: #027a48;
+  --color-system--error-red\<deleted\|relume-variable-system-color-5\>: #b42318;
 }
 
-/* PrimeVue Toast overrides (if needed) */
+/* -----------------------------
+   3. PrimeVue / External Overrides
+------------------------------ */
+/* Example: override font in PrimeVue's toast or other components */
 .p-toast {
   font-family: "Inter", sans-serif;
 }

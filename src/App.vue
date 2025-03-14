@@ -24,11 +24,12 @@ export default defineComponent({
 
 <style>
 /* Global styles */
+@import "./assets/global.css";
 body,
 html,
 #app {
   margin: 0;
   padding: 0;
-  font-family: sans-serif;
+  font-family: "Inter", sans-serif;
 }
 </style>

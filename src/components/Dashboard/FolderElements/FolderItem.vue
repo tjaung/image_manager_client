@@ -15,6 +15,16 @@
 <script lang="ts">
 import { useAuthStore } from "@/store/auth";
 import DeleteFolderButton from "./DeleteFolderButton.vue";
+import { SetupContext } from "vue";
+
+interface Props {
+  folder: Folder;
+}
+interface Folder {
+  name: string;
+  created_at: string;
+  id: string;
+}
 
 export default {
   name: "FolderItem",
@@ -28,16 +38,16 @@ export default {
     DeleteFolderButton,
   },
   emits: ["folder-click", "folder-deleted"],
-  setup(props, { emit }) {
+  setup(props: Props, { emit }: SetupContext) {
     function onRowClick() {
       emit("folder-click", props.folder.name);
       console.log("Folder clicked:", props.folder.name);
     }
 
-    function onFolderDeleted(deletedFolder) {
+    function onFolderDeleted() {
       // Bubble up the folder-deleted event to parent components.
       console.log("FOLDER DELETED SIGNAL IN FOLDER ITEM");
-      emit("folder-deleted", deletedFolder);
+      emit("folder-deleted");
     }
 
     return {

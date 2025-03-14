@@ -25,14 +25,30 @@
 </template>
 
 <script lang="ts">
-import { computed } from "vue";
+import { computed, SetupContext } from "vue";
 import { getFile } from "@/api/fileServices";
-import DeleteFileButton from "./DeleteFileButton.vue"; // <-- Import new component
+import DeleteFileButton from "./DeleteFileButton.vue";
 
+interface FileData {
+  id: string;
+  filename: string;
+  filesize: number;
+  width: number;
+  height: number;
+  is_grayscale: boolean;
+  uploaded_at: string; // or Date, if you store actual Date objects
+}
+
+interface Props {
+  file: FileData;
+  userId: string;
+  folderPath: string;
+  apiBaseUrl: string;
+}
 export default {
   name: "FileItem",
   components: {
-    DeleteFileButton, // Register it locally
+    DeleteFileButton,
   },
   props: {
     file: {
@@ -54,7 +70,7 @@ export default {
     },
   },
   emits: ["file-clicked", "file-deleted"],
-  setup(props, { emit }) {
+  setup(props: Props, { emit }: SetupContext) {
     // Convert bytes to KB
     const fileSizeInKB = computed(() =>
       (props.file.filesize / 1024).toFixed(2)

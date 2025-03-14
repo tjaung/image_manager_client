@@ -1,9 +1,14 @@
 <template>
   <div class="auth-container">
-    <AuthForm :loading="loading" mode="signup" @submit="handleSignup" />
+    <AuthForm
+      :loading="loading"
+      mode="signup"
+      :errors="formErrors"
+      @submit="handleSignup"
+    />
     <p>
       Already have an account?
-      <router-link to="/login">Login</router-link>
+      <router-link to="/login" class="link"><u>Login</u></router-link>
     </p>
   </div>
 </template>
@@ -12,7 +17,7 @@
 import { defineComponent, ref, getCurrentInstance } from "vue";
 import { useRouter } from "vue-router";
 import AuthForm from "@/components/Auth/AuthForm.vue";
-import axios from "axios";
+import { signup } from "@/api/authServices";
 
 const api_base = process.env.VUE_APP_API_BASE_URL;
 const api_signup_url = api_base + "auth/signup";
@@ -22,6 +27,7 @@ export default defineComponent({
   components: { AuthForm },
   setup() {
     const loading = ref(false);
+    const formErrors = ref<{ [key: string]: string }>({}); // Store validation errors
     const router = useRouter();
     const { appContext } = getCurrentInstance()!;
 
@@ -37,32 +43,38 @@ export default defineComponent({
     const handleSignup = async (data: {
       username: string;
       password: string;
+      confirm_password: string;
       email: string;
     }) => {
       loading.value = true;
+      formErrors.value = {}; // Reset previous errors
+
       try {
-        const response = await axios.post(api_signup_url, data);
+        const response = await signup(api_signup_url, data);
         console.log("Signup successful:", response.data);
         showToast("success", "Success", "Signup successful!");
-        // Optionally, redirect to login or dashboard after a successful signup
         router.push("/login");
       } catch (error: any) {
         console.error("Signup error:", error);
         let errMsg = "Signup failed. Please try again.";
-        if (
-          error.response &&
-          error.response.data &&
-          error.response.data.error
-        ) {
-          errMsg = error.response.data.error;
+
+        if (error.response && error.response.data) {
+          // Check if the error contains field-specific validation messages
+          formErrors.value = error.response.data;
+
+          // If there's a generic error message, display it in toast
+          if (error.response.data.non_field_errors) {
+            errMsg = error.response.data.non_field_errors[0];
+          }
         }
+
         showToast("error", "Error", errMsg);
       } finally {
         loading.value = false;
       }
     };
 
-    return { handleSignup, loading };
+    return { handleSignup, loading, formErrors };
   },
 });
 </script>
@@ -75,5 +87,15 @@ export default defineComponent({
   align-items: center;
   height: 100vh;
   padding-top: 60px; /* Adjust if you have a navbar */
+}
+p {
+  color: #000000;
+}
+.link {
+  color: var(--color-brand--dark-purple);
+  transition: 0.3s;
+}
+.link:hover {
+  color: var(--color-brand--light-purple);
 }
 </style>

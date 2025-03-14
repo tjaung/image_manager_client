@@ -7,11 +7,10 @@
 import { deleteFolder } from "@/api/folderServices";
 import { useAuthStore } from "@/store/auth";
 import { getCurrentInstance, SetupContext } from "vue";
-import ConfirmDialog from "primevue/confirmdialog";
 import { useConfirm } from "primevue/useconfirm";
 
 interface Folder {
-  id?: string | number;
+  id: string;
   name?: string;
   // any other fields you need
 }
@@ -57,7 +56,8 @@ export default {
       }
 
       confirm.require({
-        message: `Are you sure you want to delete "${props.folder.name}"?`,
+        message: `Are you sure you want to delete "${props.folder.name}"?
+        \nThis will delete all contents inside of the folder.`,
         header: "Delete Confirmation",
         icon: "pi pi-exclamation-triangle",
         accept: async () => {

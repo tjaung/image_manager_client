@@ -74,20 +74,6 @@ export default defineComponent({
       });
     }
 
-    async function onDeleteClick() {
-      if (confirm(`Are you sure you want to delete "${props.file.file}"?`)) {
-        try {
-          await deleteFile(props.userId, props.file.id);
-          alert("File deleted successfully.");
-          // Emit event so the parent knows this file is deleted
-          emit("file-deleted", props.file);
-        } catch (error) {
-          console.error("Error deleting file:", error);
-          alert("Failed to delete file.");
-        }
-      }
-    }
-
     return {
       confirmDeletion,
     };

@@ -8,10 +8,12 @@ import ToastService from "primevue/toastservice";
 import Toast from "primevue/toast";
 import ConfirmationService from "primevue/confirmationservice";
 import { ConfirmDialog } from "primevue";
+import Dialog from "primevue/dialog";
 
 import { useAuthStore } from "./store/auth";
 
 import "@/assets/global.css";
+
 import Aura from "@primeuix/themes/aura";
 
 // Ensure Axios sends credentials (HTTP‑only cookies) with each request

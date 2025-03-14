@@ -1,4 +1,22 @@
 <template>
+  <div class="header">
+    <h3>Welcome {{ user.username }}!</h3>
+    <div class="bg-container">
+      <img
+        src="https://cdn.prod.website-files.com/65fb498612c9078be4da8758/65fb498612c9078be4da87d6_Stats.webp"
+        loading="lazy"
+        sizes="100vw"
+        srcset="
+          https://cdn.prod.website-files.com/65fb498612c9078be4da8758/65fb498612c9078be4da87d6_Stats-p-500.webp   500w,
+          https://cdn.prod.website-files.com/65fb498612c9078be4da8758/65fb498612c9078be4da87d6_Stats-p-800.webp   800w,
+          https://cdn.prod.website-files.com/65fb498612c9078be4da8758/65fb498612c9078be4da87d6_Stats-p-1080.webp 1080w,
+          https://cdn.prod.website-files.com/65fb498612c9078be4da8758/65fb498612c9078be4da87d6_Stats.webp        1440w
+        "
+        alt="stats background"
+        class="stats8_background-image"
+      />
+    </div>
+  </div>
   <div class="dashboard">
     <div class="top-bar">
       <Breadcrumb :path="currentPath" @navigate="handleBreadcrumbNavigate" />
@@ -10,14 +28,17 @@
         @refreshData="handleUpdate"
       />
     </div>
-    <FinderList
-      :folders="folders"
-      :files="files"
-      :userId="user.id"
-      :currentFolderPath="currentPath.join('/')"
-      @navigate="navigateToFolder"
-      @refresh="handleUpdate"
-    />
+    <div class="file-container">
+      <FinderList
+        v-if="user"
+        :folders="folders"
+        :files="files"
+        :userId="user.id"
+        :currentFolderPath="currentPath.join('/')"
+        @navigate="navigateToFolder"
+        @refresh="handleUpdate"
+      />
+    </div>
   </div>
 </template>
 
@@ -54,6 +75,7 @@ export default {
     async fetchData(folderPath = "") {
       if (!this.user) return;
       try {
+        console.log("GET ", folderPath);
         const response = await listFolders(this.user.id, folderPath);
         console.log("Fetched data:", response.data);
         this.folders = response.data.folders;
@@ -96,6 +118,7 @@ export default {
   created() {
     const authStore = useAuthStore();
     this.user = authStore.user;
+    console.log("user: ", this.user);
     if (this.user) {
       // Initialize with root (empty folderPath).
       this.fetchData("");
@@ -108,12 +131,27 @@ export default {
 </script>
 
 <style>
+.header {
+  padding: 100px;
+}
+.bg-container {
+  z-index: -1;
+  position: absolute;
+  inset: 0%;
+}
 .dashboard {
-  padding-top: 90px;
+  height: 100vh;
+  background: var(--background-color--background-primary);
 }
 .top-bar {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
+  padding-left: 15px;
+  padding-right: 15px;
+}
+
+.file-container {
+  padding: 20px;
 }
 </style>

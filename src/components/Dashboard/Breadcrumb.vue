@@ -42,12 +42,10 @@ export default {
     navigateToSegment(index) {
       // Navigate to the selected path segment
       const pathUpToIndex = this.segments.slice(0, index + 1).join("/");
-      console.log(pathUpToIndex);
       this.$emit("navigate", pathUpToIndex);
     },
     navigateTo(path) {
       // Navigate to root or any specified path
-      console.log("breadcrumb to path: ", path);
       this.$emit("navigate", path);
     },
   },

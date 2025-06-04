@@ -1,7 +1,26 @@
 # Vue.js Image Management App
 
 This is a **Vue.js** application that provides an intuitive interface for managing image files and folders. Users can upload images, create folders, and view metadata such as file size, dimensions, and color mode.  
-If you are viewing this application and you are from **DigiM**, please check out the **About** and **Documentation** pages via the navigation bar.
+If you are viewing this application and you are from **DigiM**, please check out the **About** and **Documentation** pages via the navigation bar.  
+
+This was created as a take home assessment for a Software Engineer II position. Here is the prompt:  
+Please design and implement an image uploading and display service using Python and
+Django. This service o9ers the following features, all accessible only through REST API:
+
+1. Users can create folder by specifying a folder name.
+2. After creating a folder, users can upload images into it.
+3. Users can retrieve a list of folders.
+4. Users can retrieve a list of images within a folder.
+5. For each image, the system should be able to display the image and provide
+information, including:
+- Image size (width, height)
+- Image file size
+- Whether it’s a color or grayscale image
+- Upload date and time
+
+Please note that using AI assistance to implement the exercise is acceptable, but
+ensure you thoroughly understand all the details, as the discussion of this exercise
+could be part of a future interview.
 
 ## Features
 
